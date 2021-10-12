@@ -29,3 +29,14 @@ def find_solution(A):
     else:
         print('Solution does not exist')
         return -1
+
+
+def eig(A):
+    '''
+    finds eigenvalues and eigenvectors of matrix @A
+    reshape eigenvalues to column-vector
+    '''
+    eig_vals ,eig_vecs = np.linalg.eig(A)
+    eig_vals = eig_vals.reshape(1,-1)
+    
+    return eig_vals, eig_vecs
