@@ -52,7 +52,7 @@ def experiment(size, Pr =0.5):
     # matrix generation
     A = generate(size, Pr)
     # find eigenvalues and eigenvectors
-    lambdas, vecs = eig(A)
+    lambdas, vecs = np.linalg.eig(A)
     vecs = vecs.T
     lambdas = np.reshape(lambdas, -1)
 
