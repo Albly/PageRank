@@ -36,21 +36,45 @@ def generate(size, Pr = 0.5):
             A[i][graph[str(i)][j]] = 1/g[graph[str(i)][j]] 
 
     return A
+
+
+def generate_dangled(size, Pr = 0.75):
+    A = generate(size, Pr)
+    column = np.random.randint(0, A.shape[0])
+    A[:,column] = 0
+    return A
+
+
+def generate_segmented(size, Pr = 0.75):
+    if size < 10:
+        raise Exception('Size {} is too small, use size more than 10'.format(size))
+
+    size_1 = np.random.randint(low = 4, high = size-4)
+    size_2 = size - size_1
     
-def experiment(size, Pr =0.5):
+    A = np.zeros((size,size))
+    
+    A_part_1 = generate(size_1, Pr)
+    A_part_2 = generate(size_2, Pr)
+
+
+    A[0:size_1, 0:size_1] = A_part_1
+    A[size_1:size_1 + size_2, size_1:size_1+size_2] = A_part_2
+
+    return A
+
+
+def check_matrix(A):
     '''
-    Creates random transitions matrix and finds solution with 
-    PageRank algorithm. 
+    Checks transition matrix for problems and existing solutions. 
     Returns:
      0 - if one solution is exist. 
-    -1 - if generated matrix is dandling
-    -2 - if it has unboundings
+    -1 - if generated matrix is dangled
+    -2 - if it has segments
     -3 - if it has loops
     -4 - if it has no solution (Incorrecly generated matrix)
     '''
 
-    # matrix generation
-    A = generate(size, Pr)
     # find eigenvalues and eigenvectors
     lambdas, vecs = np.linalg.eig(A)
     vecs = vecs.T

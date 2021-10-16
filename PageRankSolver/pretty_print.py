@@ -1,4 +1,8 @@
 import plotly.figure_factory as ff
+import plotly.express as px
+import plotly.graph_objects as go
+
+
 import numpy as np
 
 
@@ -16,7 +20,7 @@ def matprint(mat, fmt=".2f"):
         print("")
 
 
-def plot_matrix(A):
+def plot_matrix(A, width = 300, height = 300):
     '''
     Visualize matrix A. 
 
@@ -24,17 +28,28 @@ def plot_matrix(A):
     Or find abs(A) for them, or
     plot separately A.real , A.imag 
     '''
-    fig = ff.create_annotated_heatmap(np.around(A, decimals=2), colorscale='YlGnBu')
-    fig.update_layout(
-        autosize=False,
-        width=500,
-        height=500,
-        margin=dict(
-            l=5,
-            r=5,
-            b=5,
-            t=5,
-            pad=0
-        ),
-    )
+
+    if A.shape[0] < 20:
+        fig = ff.create_annotated_heatmap(np.around(A, decimals=2), colorscale='YlGnBu')
+        fig.update_layout(
+            autosize=False,
+            width = width,
+            height = height,
+            margin=dict(
+                l=5,
+                r=5,
+                b=5,
+                t=5,
+                pad=0
+            ),
+        )
+    else: 
+        data = [go.Heatmap(
+             z=A, 
+             colorscale='YlGnBu')]
+
+        layout = go.Layout(autosize = False, template='none', width=width, height=height,margin=go.layout.Margin(l=40, r=40, b=40, t=40,))
+        
+        fig = go.Figure(data=data, layout=layout)
+    
     fig.show()
