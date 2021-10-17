@@ -1,7 +1,8 @@
 import numpy as np
-from numba import njit
 
 
+# Transition Matrix generators
+#===================================================================
 def generate(size, Pr = 0.5):
     '''
     Generate graph, consisted of @size nodes.
@@ -119,46 +120,18 @@ def check_matrix(A):
     return 0
 
 
-@njit(fastmath=True)
-def fast_generate(size: int, Pr = 0.5):
-    mask = np.zeros((size,size))
-    
-    for i in range(size):
-        for j in range(size):
-            if i!=j:
-                if np.random.binomial(1,Pr,1) == 1:
-                    mask[i][j] = 1
-    
-    norms = np.sum(mask, axis = 0)
-    mask = mask / norms
+# Correction methods
+#===================================================================
 
-    return mask 
+def add_weak_links(A, dampling_factor = 0.15):
+    R = np.ones((A.shape)) / A.shape[0]
+    A_corrected = (1-dampling_factor)*A + dampling_factor*R
+    return A_corrected
 
-@njit(fastmath=True)
-def fast_generate_dangled(size, Pr = 0.75):
-    A = fast_generate(size, Pr)
-    column = np.random.randint(0, A.shape[0])
-    A[:,column] = 0
+
+def connect_dangled_node(A):
+    zero_col_idxs = np.where(A.sum(0) == 0)[0]
+    for _, idx in enumerate(zero_col_idxs):
+        A[:,idx] = 1 / A.shape[0]
+    
     return A
-
-@njit(fastmath=True)
-def ___generate_segmented(size, Pr):
-    size_1 = np.random.randint(low = 4, high = size-4)
-    size_2 = size - size_1
-    
-    A = np.zeros((size,size))
-    
-    A_part_1 = fast_generate(size_1, Pr)
-    A_part_2 = fast_generate(size_2, Pr)
-
-
-    A[0:size_1, 0:size_1] = A_part_1
-    A[size_1:size_1 + size_2, size_1:size_1+size_2] = A_part_2
-
-    return A
-
-def fast_generate_segmented(size, Pr = 0.75):
-    if size < 10:
-        raise Exception('Size {} is too small, use size more than 10'.format(size))
-    
-    return ___generate_segmented(size, Pr)

@@ -48,8 +48,7 @@ def plot_matrix(A, width = 300, height = 300):
              z=A, 
              colorscale='YlGnBu')]
 
-        layout = go.Layout(autosize = False, template='none', width=width, height=height,margin=go.layout.Margin(l=40, r=40, b=40, t=40,))
-        
+        layout = go.Layout(autosize = False, template='none', width=width, height=height,margin=go.layout.Margin(l=40, r=40, b=40, t=40,))     
         fig = go.Figure(data=data, layout=layout)
     
     fig.show()
