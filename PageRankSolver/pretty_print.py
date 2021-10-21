@@ -20,7 +20,7 @@ def matprint(mat, fmt=".2f"):
         print("")
 
 
-def plot_matrix(A, width = 300, height = 300):
+def plot_matrix(A, width = 300, height = 300, cmap = 'YlGnBu'):
     '''
     Visualize matrix A. 
 
@@ -30,7 +30,7 @@ def plot_matrix(A, width = 300, height = 300):
     '''
 
     if A.shape[0] < 20:
-        fig = ff.create_annotated_heatmap(np.around(A, decimals=2), colorscale='YlGnBu')
+        fig = ff.create_annotated_heatmap(np.around(A, decimals=2), colorscale = cmap)
         fig.update_layout(
             autosize=False,
             width = width,
@@ -46,9 +46,10 @@ def plot_matrix(A, width = 300, height = 300):
     else: 
         data = [go.Heatmap(
              z=A, 
-             colorscale='YlGnBu')]
+             colorscale = cmap)]
 
         layout = go.Layout(autosize = False, template='none', width=width, height=height,margin=go.layout.Margin(l=40, r=40, b=40, t=40,))     
         fig = go.Figure(data=data, layout=layout)
-    
+        
+    fig['layout']['yaxis']['autorange'] = "reversed"
     fig.show()

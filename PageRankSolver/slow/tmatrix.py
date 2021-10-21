@@ -41,6 +41,61 @@ def generate(size, Pr = 0.5):
     return A
 
 
+def generate_bolobas_riordan(n,m):
+     
+    N = m*n                                 # Generate NxN size graph
+
+    Trans_matrix = np.zeros((N,N))          # Non-normalized Transition matrix
+    degree_vec = np.zeros((N))              # degrees of each node
+
+    Trans_matrix[0][0] = 1                  # Add first node and link to himself 
+    degree_vec[0] = 2                       # therefore its degree increase to 2
+
+    for node in range(1,N):                 # go for each node which will be paired
+        probs = np.zeros((node+1))          # vector with probabilities
+
+        
+        for pair in range(node):            # go for each existing node
+            denum = 2*(node+1)-1            # denumenator of frac
+
+            deg = degree_vec[pair]          # find degree 
+            prob = deg/denum                # calculate probability
+
+            probs[pair] = prob              # add probability to array
+        
+        prob = 1/denum                      # probability for node to be connected with itself
+        probs[-1] = prob                    # add it to last array element 
+
+        chosen = np.choice(np.arange(node+1).tolist(),1, p = probs.tolist())  # choose element randomly with given probabilities
+        
+        if chosen == node:                  # if the node choses itself
+            degree_vec[node] +=2            # increase its degree to 2
+            Trans_matrix[node][node] = 1    # add value to transition matrix
+        
+        else:                               # otherwise
+            degree_vec[chosen] +=1          # add to chosen node 1 degree
+            degree_vec[node] +=1            # and 1 degree node that chose 
+            Trans_matrix[chosen][node] = 1  # add valuet to Transition matrix
+
+    convolved_matrix = np.zeros((n,n))      # Array for convolved transition matrix
+
+    for i in range(n):                      # for each x-cell in convolved matrix
+        for j in range(n):                  # for each y-cell in convolved matrix
+            x_idx, y_idx = i*m, j*m         # calculate idxs in Transition matrices
+            for x_ker in range(m):          # go for each kernel x-cell
+                for y_ker in range(m):      # go for each kernel y-cell 
+                    convolved_matrix[i,j] += Trans_matrix[x_idx+x_ker][y_idx+y_ker] # accumulate values
+
+
+    norms = np.sum(convolved_matrix, axis = 0)  # calculate 1-st norm of each column
+    norms[norms == 0] = 1                       # if it is 0 then make it 1 (to avoid dividing by 0)
+    
+    convolved_matrix = convolved_matrix / norms # normalize convolved matrix 
+
+    return convolved_matrix
+
+
+
 def generate_dangled(size, Pr = 0.75):
     A = generate(size, Pr)
     column = np.random.randint(0, A.shape[0])
