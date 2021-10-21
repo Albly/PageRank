@@ -23,7 +23,7 @@ def generate(size: int, Pr = 0.5):
 
 
 @njit(fastmath = True)
-def generate_bolobas_riordan(n,m):
+def generate_bollobas_riordan(n,m):
      
     N = m*n                                 # Generate NxN size graph
 

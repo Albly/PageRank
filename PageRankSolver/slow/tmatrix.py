@@ -41,7 +41,7 @@ def generate(size, Pr = 0.5):
     return A
 
 
-def generate_bolobas_riordan(n,m):
+def generate_bollobas_riordan(n,m):
      
     N = m*n                                 # Generate NxN size graph
 
