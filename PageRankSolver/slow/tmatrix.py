@@ -145,6 +145,7 @@ def check_matrix(A):
         if i == 0:
             #print('Dandling')
             return -1
+            
         # Calculate number of eigenvalues which are equal to 1
         elif np.isclose(i,1):
             count += 1 

@@ -1,6 +1,5 @@
 import numpy as np
 from numba import njit
-from PageRankSolver.fast.solver import choice
 
 # Transition matrix generators
 #===================================================================
@@ -21,6 +20,17 @@ def generate(size: int, Pr = 0.5):
 
     return mask 
 
+
+@njit(fastmath = True)
+def __choice(elements, probs_vec):
+    r = np.random.rand()
+    s = 0
+    for i in range(len(elements)):
+        s += probs_vec[i]
+        if s > r:
+            return elements[i]
+
+    return elements[len(elements)]
 
 @njit(fastmath = True)
 def generate_bollobas_riordan(n,m):
@@ -48,7 +58,7 @@ def generate_bollobas_riordan(n,m):
         prob = 1/denum                      # probability for node to be connected with itself
         probs[-1] = prob                    # add it to last array element 
 
-        chosen = choice(np.arange(node+1), probs)  # choose element randomly with given probabilities
+        chosen = __choice(np.arange(node+1), probs)  # choose element randomly with given probabilities
         
         if chosen == node:                  # if the node choses itself
             degree_vec[node] +=2            # increase its degree to 2
@@ -109,60 +119,52 @@ def generate_segmented(size, Pr = 0.75):
     return ___generate_segmented(size, Pr)
 
 
+
 @njit(fastmath = True)
-def check_matrix(A):
+def check_matrix(A, atol = 1e-12):
     '''
     Checks transition matrix for problems and existing solutions. 
     Returns:
      0 - if one solution is exist. 
-    -1 - if generated matrix is dangled
-    -2 - if it has segments
-    -3 - if it has loops
-    -4 - if it has no solution (Incorrecly generated matrix)
+     1 - if generated matrix is dangled
+     2 - if it has segments
+     3 - if it has loops
+     4 - if it has no solution (Incorrecly generated matrix)
     '''
 
-    # find eigenvalues and eigenvectors
-    lambdas, vecs = np.linalg.eig(A.astype(np.complex128))
-    vecs = vecs.T
+    problems = np.zeros(5)                                          # vector with problem idxs
+
+    lambdas, vecs = np.linalg.eig(A.astype(np.complex128))          # find eigenvalues and eigenvectors
+    vecs = vecs.T           
     lambdas = np.reshape(lambdas, -1)
 
-    count = 0
-    # go over all eigenvalues
-    for i in lambdas:
-        # if any eigenvalue is 0, then it's dandling problem
-        if np.isclose(i,0):
-            #print('Dandling')
-            return -1
-        # Calculate number of eigenvalues which are equal to 1
-        elif np.isclose(i,1):
-            count += 1 
-    
-    # If we have more then 1 eigenvalue with value 1
-    # then we have unboundings
-    if count > 1:
-        #print('unbounding')
-        return -2
-    
-    # If no eigenvalue with value 1 - error  
-    # any column-stockastick matrix has to have such lambda
-    elif count == 0:
-        #print('error')
-        return -4
-    
-    # find index where eigenvalues are equal to 1
-    ind = np.where(np.isclose(lambdas,1))
-    # find corresponding eigenvector
-    sol = vecs[ind[0][0]]
+    count = 0                                                       # number of probable solutions
+    for i in range(len(lambdas)):                                   # go over all eigenvalues
 
-    # if resulting eigenvector contains zeros
-    idx = len(np.where(np.isclose(sol,0))[0])
-    # it's loop problem
-    if idx > 0 :
-        #print("loop")
-        return -3
-    return 0
+        if np.abs(lambdas[i]) < atol:                               # check if it's equal to 0
+            problems[0] = 1                                         # if any eigenvalue is 0, then it's dandling problem
+        
+        elif np.abs(lambdas[i] - 1) < atol:                         # if it's one
+            count += 1                                              # Calculate number of eigenvalues which are equal to 1 
+            
+            vec = vecs[i]                                           # find it's eigenvector
+            for el in vec:                                          # go for each element
+                if (abs(el) < atol):                                  # if it's zero 
+                    problems[2] = 1                                 # loop problem
+                    break;
 
+    if count > 1:                                                   # If we have more then 1 eigenvalue with value 1
+        problems[1] = 1                                             # then we have unboundings
+    
 
+    elif count == 0:                                                # If no eigenvalue with value 1 - error  
+        problems[3] = 1
+    
+
+    if np.sum(problems) == 0:
+        problems[4] = 1
+
+    return problems
 
 # Correction methods for Transition matrix
 #===================================================================
