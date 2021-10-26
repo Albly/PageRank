@@ -41,6 +41,7 @@ def power_method(A, num_simulations: int, create_history = False, autostop_thres
     # Ideally choose a random vector
     # To decrease the chance that our vector
     # Is orthogonal to the eigenvector
+
     if create_history: 
         history_power = []
     

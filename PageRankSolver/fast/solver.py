@@ -8,21 +8,38 @@ def eig(A):
     
     eig_vals, eig_vecs = np.linalg.eig(A.astype(np.complex128))
     eig_vecs = eig_vecs.T
-    ind = np.where(np.isclose(eig_vals,1))
-    solutions = len(ind)  
 
-    if solutions == 1:
-        return eig_vecs[ind[0][0]] , 1 
+    n_solutions = 0
+
+    for lambd in eig_vals:
+        if abs(lambd-1) < 1e-12:
+            n_solutions +=1
+
+    ans = np.zeros((A.shape[0], n_solutions)).astype(np.complex128)
+    idx = 0
+
+    for l_idx in range(len(eig_vals)):
+        if abs(eig_vals[l_idx]-1) < 1e-12:
+            ans[:,idx] = eig_vecs[l_idx,:]
     
-    elif solutions > 1:
-        answer = []
-        for i in range(solutions):
-            answer.append(eig_vecs[ind[i][0]])
-        
-        return answer , solutions
+    return ans
+
+
+@njit(fastmath = True)
+def max_lambdas(A, n ):
     
-    else:
-        return -1 , -1 
+    eig_vals, _ = np.linalg.eig(A.astype(np.complex128))
+
+    eig_vals = (np.abs(eig_vals).real).astype(np.float64)
+    eig_vals = np.sort(eig_vals)
+
+    ans = np.zeros((n)).astype(np.float64)
+
+    for i in range(n):
+        ans[i] = eig_vals[-i-1]
+    
+    return ans
+
 #===================================================================
 
 
@@ -70,10 +87,66 @@ def mcmc(n_trials, A):
     freqs = np.zeros(n)
 
     for i in range(n_trials):
-        page = choice(elements = np.arange(n), probs_vec= A[:,page])
+        page = __choice(elements = np.arange(n), probs_vec= A[:,page])
         freqs[page] += 1
     ans = freqs/n_trials
     ans = ans/np.linalg.norm(ans)
     
     return ans
+
+
+@njit(fastmath = True)
+def mcmc_loss(n_trials, A, true_vec):
+    n = A.shape[0]
+    page = np.random.randint(n)
+    freqs = np.zeros(n)
+
+    loss = np.zeros(n_trials)
+    ans = np.zeros(n)
+
+    for i in range(n_trials):
+        page = __choice(elements = np.arange(n), probs_vec= A[:,page])
+        freqs[page] += 1
+        
+        ans = freqs/n_trials
+        ans = ans/np.linalg.norm(ans)
+        loss[i] = np.mean(((ans - true_vec)**2))
+
+    return loss
+
+
+@njit(fastmath = True)
+def power(A, n_trials):
+    b_k = np.random.rand(A.shape[1])
+
+    for i in range(n_trials):
+        b_k1 = np.dot(A, b_k)
+        b_k1_norm = np.linalg.norm(b_k1)
+        new_bk = b_k1 / b_k1_norm 
+
+        b_k = new_bk
+
+    
+    return b_k
+
+
+
+@njit(fastmath = True)
+def power_loss(A, n_trials, true_vec):
+    b_k = np.random.rand(A.shape[1])
+
+    loss = np.zeros(n_trials)
+
+    for i in range(n_trials):
+        b_k1 = np.dot(A, b_k)
+        b_k1_norm = np.linalg.norm(b_k1)
+        new_bk = b_k1 / b_k1_norm 
+
+        b_k = new_bk
+
+        loss[i] = np.mean(((b_k - true_vec)**2))
+    
+    return loss
+
+
 #===================================================================
