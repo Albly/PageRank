@@ -22,9 +22,17 @@ On the following graphs we checked how often each king of problem appear. Here c
 <img src="./img/ER3.png" width="90%" height="90%"> 
 </p>
 
-# Markov chain Monte-Carlo convergence method 
+
+# Power method convergence method 
+Power method convergers very fast (for some cases even for 2-3 iterations). However, it converges fast in case if ratio between 2 max eigenvalues are low (they are very different). In case of segmented matrices we have two almost equal eiqenvalues, it such case algoritm converges randomly to any of eigenvector which correspond to max eigenvalues. That's why the result is quite bad.
+
+No problems                                                |  Segmented matrix
+:---------------------------------------------------------:|:-------------------------:
+<img src="./img/ER6.png" width="100%" height="100%">  |  <img src="./img/ER8.png" width="100%" height="100%"> 
+
+
+# Markov chain Monte-Carlo convergence method
+This method converges slowly, than Power method, but it works faster in case of high-dimentional cases, where matrix multiplication is hard to do. In case of single chain we also have the problem of convergence to random eigenvector (because from one part of matrix it's impossibe to go to another one). However in case of parallel implementation, we can combine results from different processes and get correct results. 
 No problems                                                |  Segmented matrix
 :---------------------------------------------------------:|:-------------------------:
 <img src="./img/ER4.png" width="100%" height="100%">  |  <img src="./img/ER5.png" width="100%" height="100%"> 
-
-# Power method convergence method 
