@@ -15,9 +15,9 @@ To do this for Erdős–Rényi model we created a grid of matrix sizes and proba
 
 2D plot                                                    |  3D plot
 :---------------------------------------------------------:|:-------------------------:
-<img src="./img/ER1.png" width="50%" height="50%">  |  <img src="./img/ER2.png" width="50%" height="50%"> 
+<img src="./img/ER1.png" width="100%" height="100%">  |  <img src="./img/ER2.png" width="100%" height="100%"> 
 
 On the following graphs we checked how often each king of problem appear. Here colors represents probability to get specific kind of the problem 
 <p align="center">
-<img src="./img/ER3.png" width="50%" height="50%"> 
+<img src="./img/ER3.png" width="90%" height="90%"> 
 </p>
