@@ -12,4 +12,4 @@ In order to repeat our experiments, you can use `main.ipynb` file. If you want t
 # Our reults
 Firstly, we tried to understand when each kind of problem can appear in order to use parametrs where it's difficult to get some one.
 To do this for Erdős–Rényi model we created a grid of matrix sizes and probabilities for nodes to be connected, then for each point of grid we generated 5000 matrices and check them for problems. On the following graph the color represents the probability to get matrix without problems: 
-<img src="./img/ER1.png" width="100%" height="100%"> 
+<img src="./img/ER1.png" width="50%" height="50%"> 
