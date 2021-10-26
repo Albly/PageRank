@@ -28,7 +28,7 @@ Power method convergers very fast (for some cases even for 2-3 iterations). Howe
 
 No problems                                                |  Segmented matrix
 :---------------------------------------------------------:|:-------------------------:
-<img src="./img/ER6.png" width="100%" height="100%">  |  <img src="./img/ER8.png" width="100%" height="100%"> 
+<img src="./img/ER6.png" width="90%" height="90%">  |  <img src="./img/ER8.png" width="100%" height="100%"> 
 
 
 # Markov chain Monte-Carlo convergence method
