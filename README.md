@@ -7,5 +7,5 @@ Also, here we have three kinds of solvers: 1) based on NumPy eig function. 2) Po
 Finally, this package can be split into two: "slow" (with usual python implementation) and "fast" with jitted python implementation.
 
 # How to use it?
-In order to repeat our experiments, you can use 'main.ipynb' file. If you want to use our package, just use the first cell from 'main.ipynb' to download the module and then use it as you with.
+In order to repeat our experiments, you can use `main.ipynb` file. If you want to use our package, just use the first cell from `main.ipynb` to download the module and then use it as you with.
 
